@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title></title>
+	<meta name="generator" content="LibreOffice 4.2.5.2 (MacOSX)">
+	<meta name="created" content="20141113;185428317816000">
+	<meta name="changed" content="20141113;191129912765000">
+	<style type="text/css">
+	<!--
+		@page { margin: 0.79in }
+		p { margin-bottom: 0.1in; line-height: 120% }
+		a:link { so-language: zxx }
+	-->
+	</style>
+</head>
+<body lang="en-US" dir="ltr">
+<p style="margin-bottom: 0in; line-height: 100%; text-decoration: none">
+<font size="4" style="font-size: 14pt"><b>Tests!</b></font></p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+If you're up to it, then change to the tests directory, and use the
+following command for non-verbose testing.  You should get &quot;OK&quot;
+in bottom line if all went okay after you run this:</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<font face="Courier New, monospace">python -m unittest discover -s .
+-p 'test_*.py'</font></p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+If you're curious and want to see more, then change to the tests
+directory, and use the following command for <b>verbose</b> testing. 
+You should get &quot;OK&quot; in bottom line if all went okay after
+you run this:</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<font face="Courier New, monospace">python -m unittest discover -s .
+-p 'test_*.py' -v</font></p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+This seemed like a good place to put some other, higher-level notes
+and thoughts for testing that you might consider...</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<b>Scenario #1</b>: Given a linear chirp with amplitude and frequency
+ranges that are representative of the loudest International Space Station's
+vibratory microgravity environment, we should expect a portion of
+that signal (below 20 Hz and perhaps even a bit higher than that) to
+be inaudible.  Let's test this as follows:</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+1. Create linear chirp signal (described in scenario statement above)
+and save that as acceleration file like so:</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+command goes here</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+2. Convert the acceleration file you just created into an audio AIFF
+file thusly:</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+command goes here</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+3. Listen to the audio AIFF file and try to gauge at what time in
+seconds relative to start of playback that you start to hear the
+signal.</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+Sox or Audacity command goes here</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+4. Multiply the time you first hear sound in seconds relative to the
+start of playback from #3 and multiply that by WHAT SCALE FACTOR to
+get the approximate lower end of your hearing frequency range.  The
+scale factor comes from how the frequency of the linear chirp signal
+was changing with time.</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<b>Scenario #2</b>: Given the same scenario as Test Case #1, except
+that we convert using a new, higher rate we now expect to hear more
+(longer duration) of the chirp.</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+1. Do steps #1 and #2 shown in Scenario #1 above.</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+2. Convert acceleration to audio AIFF file, but use a new, higher
+rate:</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+command goes here</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+<br>
+</p>
+<p style="margin-bottom: 0in; font-weight: normal; line-height: 100%; text-decoration: none">
+3. Listen to the audio and notice this is a technique you can use to
+hear the otherwise inaudible, kinda like night-vision goggles.  Beware though...in this scenario, we are intentionally distorting the signal.</p>
+</body>
+</html>

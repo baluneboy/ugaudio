@@ -1,0 +1,5 @@
+# removed these files (too large) from examples directory
+2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02
+2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02.header
+2014_11_18_00_00_00.000_121f08_spgs_roadmaps500_train_of_peaks.pdf
+2014_10_17_06_30_00_000_121f02_spgs_roadmaps500_columbus_pitchfork.pdf
