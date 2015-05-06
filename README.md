@@ -50,47 +50,41 @@ then listen, you should only hear the z-axis and s-axis sound file
 test2.pad - 
 
 
-################################################################################
-#
-# BLOOPERS
-#
-################################################################################
-#
-# First, a quick acknowledgement to my neighbors who may have heard more than a
-# few strange sounds coming from my general direction during development.
-#
-################################################################################
-#
-# Wanna hear a bird chirping on the International Space Station!?
-#
-# 1. Download/convert the following file:
-# % ugaudio.py -r 22050 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02
-#
-# 2. Listen to bird excerpt of this recording using sox's play command:
-# play 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff trim 9 5
-#
-# or this command to apply band-pass filter (center = 2500 Hz, width = 500 Hz)
-# play 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff trim 9 5 2.5k 500h
-#
-# 3. Alternatively, open resulting AIFF file with Audacity:
-# % open -a Audacity 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff
-#
-# 3. Use the I-beam tool in Audacity to select the portion of the signal between
-# about the 9-sec and 14-sec mark, then give that a listen.
-#
-################################################################################
-#
-# I abandoned chain-encoding scheme shown below because Mac OSX (Mavericks)
-# failed to handle filenaming as expected. That is, if I overwrite a file
-# including "RETFS" in suffix with one that had "rETFS", it still showed up with
-# capital R (instead of lowercase) in filename. Sadly, Mavericks seems to behave
-# like Windows in this regard.  C'mon mac!
-#
-# R A T F S  process-chain encoding to include with suffix on output filename
-# : : : : :
-# : : : : :
-# : : : : ..... SHIFT character is S for freq-shifted data; otherwise, it's s
-# : : : ......... FILTER character is F for filtered data; otherwise, it's f
-# : : ............ TAPER character is T for tapered data; otherwise, it's t
-# : ............... AXIS character is X, Y, Z, or S; S = X + Y + Z
-# .................. RATE character is R for native rate; otherwise, it's r
+### BLOOPERS ###
+ 
+First, a quick acknowledgement to my neighbors who may have heard more than a
+few strange sounds coming from my general direction during development.
+
+**Wanna hear a bird chirping on the International Space Station!?**
+
+1. Download/convert the following file:
+% ugaudio.py -r 22050 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02
+
+2. Listen to bird excerpt of this recording using sox's play command:
+play 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff trim 9 5
+
+or this command to apply band-pass filter (center = 2500 Hz, width = 500 Hz)
+play 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff trim 9 5 2.5k 500h
+
+3. Alternatively, open resulting AIFF file with Audacity:
+% open -a Audacity 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff
+
+3. Use the I-beam tool in Audacity to select the portion of the signal between
+about the 9-sec and 14-sec mark, then give that a listen.
+
+**C'mon Mac!**
+
+I abandoned chain-encoding scheme shown below because Mac OSX (Mavericks)
+failed to handle filenaming as expected. That is, if I overwrite a file
+including "RETFS" in suffix with one that had "rETFS", it still showed up with
+capital R (instead of lowercase) in filename. Sadly, Mavericks seems to behave
+like Windows in this regard.  C'mon mac!
+
+R A T F S  process-chain encoding to include with suffix on output filename
+: : : : :
+: : : : :
+: : : : ..... SHIFT character is S for freq-shifted data; otherwise, it's s
+: : : ......... FILTER character is F for filtered data; otherwise, it's f
+: : ............ TAPER character is T for tapered data; otherwise, it's t
+: ............... AXIS character is X, Y, Z, or S; S = X + Y + Z
+.................. RATE character is R for native rate; otherwise, it's r
