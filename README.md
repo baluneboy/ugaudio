@@ -71,7 +71,7 @@ convert.py -r 22050 014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02
 
 play 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff trim 9 5
 
-or this command to apply band-pass filter (center = 2500 Hz, width = 500 Hz) << FIXME this following command does not nicely fit on line >>
+or this command to apply band-pass filter (center = 2500 Hz, width = 500 Hz)
 
 play 2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02s.aiff trim 9 5 2.5k 500h
 
