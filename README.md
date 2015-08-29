@@ -10,8 +10,8 @@ that the sound produced will be either pleasant or at a desirable volume.
 DEPENDENCIES: python, numpy, scipy, matplotlib, and pygame
 
 DESIRABLE:
-sox (the Swiss Army knife of sound processing programs)
-audacity (sound editing program)
+..sox (the Swiss Army knife of sound processing programs)
+..audacity (sound editing program)
 
 PRACTICAL CONSIDERATIONS
 
@@ -86,11 +86,11 @@ including "RETFS" in suffix with one that had "rETFS", it still showed up with
 capital R (instead of lowercase) in filename. Sadly, Mavericks seems to behave
 like Windows in this regard.  C'mon mac!
 
-*R A T F S  process-chain encoding to include with suffix on output filename
-*: : : : :
-*: : : : :
-*: : : : ..... SHIFT character is S for freq-shifted data; otherwise, it's s
-*: : : ......... FILTER character is F for filtered data; otherwise, it's f
-*: : ............ TAPER character is T for tapered data; otherwise, it's t
-*: ............... AXIS character is X, Y, Z, or S; S = X + Y + Z
-*.................. RATE character is R for native rate; otherwise, it's r
+..R A T F S  process-chain encoding to include with suffix on output filename
+..: : : : :
+..: : : : :
+..: : : : ..... SHIFT character is S for freq-shifted data; otherwise, it's s
+..: : : ......... FILTER character is F for filtered data; otherwise, it's f
+..: : ............ TAPER character is T for tapered data; otherwise, it's t
+..: ............... AXIS character is X, Y, Z, or S; S = X + Y + Z
+.................... RATE character is R for native rate; otherwise, it's r
