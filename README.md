@@ -80,17 +80,20 @@ about the 9-sec and 14-sec mark, then give that a listen.
 
 **C'mon Mac!**
 
-I abandoned chain-encoding scheme shown below because Mac OSX (Mavericks)
+I abandoned chain-encoding scheme shown poorly below because Mac OSX (Mavericks)
 failed to handle filenaming as expected. That is, if I overwrite a file
 including "RETFS" in suffix with one that had "rETFS", it still showed up with
 capital R (instead of lowercase) in filename. Sadly, Mavericks seems to behave
 like Windows in this regard.  C'mon mac!
 
-..R A T F S  process-chain encoding to include with suffix on output filename
-..: : : : :
-..: : : : :
-..: : : : ..... SHIFT character is S for freq-shifted data; otherwise, it's s
-..: : : ......... FILTER character is F for filtered data; otherwise, it's f
-..: : ............ TAPER character is T for tapered data; otherwise, it's t
-..: ............... AXIS character is X, Y, Z, or S; S = X + Y + Z
-.................... RATE character is R for native rate; otherwise, it's r
+The text below is shown poorly because I cannot get Markdown encoding to do 
+what I want.  This is my fault for not learning all of Markdown.  C'mon Ken!
+
+R A T F S  process-chain encoding to include with suffix on output filename
+: : : : :
+: : : : :
+: : : : ..... SHIFT character is S for freq-shifted data; otherwise, it's s
+: : : ......... FILTER character is F for filtered data; otherwise, it's f
+: : ............ TAPER character is T for tapered data; otherwise, it's t
+: ............... AXIS character is X, Y, Z, or S; S = X + Y + Z
+.................. RATE character is R for native rate; otherwise, it's r
