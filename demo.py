@@ -70,3 +70,13 @@ def demo_accel():
         msg = 'could not convert...\n%s\nis everything okay with "examples" directory?' % pad_file
     
     print msg + '\n'
+
+def show_samplerate(header_file):
+    """return sample rate (samples/sec) for input header file"""
+    pad_file = PadFile(header_file)
+    print pad_file
+    
+if __name__ == "__main__":
+    header_file = '/misc/yoda/pub/pad/year2017/month04/day01/sams2_accel_121f04/2017_04_01_20_55_05.415+2017_04_01_21_05_05.426.121f04.header'
+    data_file = header_file.replace('.header', '')
+    show_samplerate(data_file)
