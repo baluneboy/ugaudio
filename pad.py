@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 from ugaudio.load import padread
 from ugaudio.signal import normalize, my_taper
 
-# A class to implement a loose interpretation for binary file conversion to audio.
 class PadFile(object):
     """A class to implement a loose interpretation for binary file conversion to audio.
 
@@ -54,7 +53,6 @@ class PadFile(object):
         else:
             return '%s (non-file)' % bname
     
-    # Return True if file exists, has non-zero length, and float32 txyz frames.
     def is_pad(self):
         """Return True if file exists, has non-zero length, and float32 txyz frames."""
         if not os.path.exists(self.filename):
@@ -68,7 +66,6 @@ class PadFile(object):
             return False
         return True
     
-    # Return header filename if it exists; otherwise, None.
     def get_headerfile(self):
         """Return header filename if it exists; otherwise, None."""
         hdrfile = self.filename + '.header'
@@ -77,7 +74,6 @@ class PadFile(object):
         else:
             return None
     
-    # Calculate sample rate from time step in data file.
     def _calculate_sample_rate(self):
         """Calculate sample rate from time step in data file."""
         with open(self.filename, 'rb') as f:
@@ -95,7 +91,6 @@ class PadFile(object):
         # Return calculated sample rate.
         return round(1.0 / delta_t, 3)
     
-    # Attempt to parse sample rate from header file; otherwise calculate it.
     def get_samplerate(self):
         """Attempt to parse sample rate from header file; otherwise calculate it."""
         if self.headerfile:
@@ -109,7 +104,6 @@ class PadFile(object):
         else:
             return self._calculate_sample_rate()
     
-    # Convert designated axis to AIFF, and maybe plot it too.
     def convert(self, rate=None, axis='s', plot=False, taper=0):
         """Convert designated axis to AIFF, and maybe plot it too."""
         # If not properly formatted, then return without doing anything.
