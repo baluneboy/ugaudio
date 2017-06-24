@@ -9,7 +9,6 @@ from ugaudio.create import get_chirp
 from ugaudio.signal import normalize
 from ugaudio.pad import PadFile
 
-# simple demo of chirp signal (not representative of accel data)
 def demo_chirp(fs=44100):
     """simple demo of chirp signal (not representative of ug accel data)"""
 
@@ -45,7 +44,6 @@ def demo_chirp(fs=44100):
     plt.savefig(png_file)    
     print 'wrote demo accel plot file  %s' % png_file
 
-# somewhat representative of microgravity accel data from ISS
 def demo_accel():
     """somewhat representative of microgravity accel data from ISS"""
 
@@ -70,3 +68,40 @@ def demo_accel():
         msg = 'could not convert...\n%s\nis everything okay with "examples" directory?' % pad_file
     
     print msg + '\n'
+
+def demo_accel_file(data_file, axis='x'):
+    """demo arbitrary file with microgravity accel data from ISS"""
+
+    print '\ndemo with actual acceleration data from %s' % data_file
+    
+    # get PadFile and attempt conversion
+    pad_file = PadFile(data_file)
+    
+    try:
+        pad_file.convert(plot=True, axis=axis)
+        msg = 'wrote PNG & AIFF files for %s-axis of %s' % (axis, pad_file)
+    
+    except:
+        msg = 'could not convert to audio (or plot) %s' % pad_file
+    
+    print msg + '\n'
+
+def show_samplerate(header_file):
+    """return sample rate (samples/sec) for input header file"""
+    pad_file = PadFile(header_file)
+    print pad_file
+    
+if __name__ == "__main__":
+    
+    ## get sample rate from header file
+    #header_file = '/misc/yoda/pub/pad/year2017/month04/day01/sams2_accel_121f04/2017_04_01_20_55_05.415+2017_04_01_21_05_05.426.121f04.header'
+    #data_file = header_file.replace('.header', '')
+    #show_samplerate(data_file)
+    
+    ## generate artficial chirp, then create sound file (AIFF format) and plot it (PNG format)
+    #demo_chirp()
+    
+    # plot SAMS TSH (es06) data file (just one axis)
+    data_file = '/tmp/2017_05_22_23_39_02.803+2017_05_22_23_49_02.861.es06'
+    #show_samplerate(data_file)
+    demo_accel_file(data_file, axis='x') # just x-axis here
