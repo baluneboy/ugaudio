@@ -60,7 +60,7 @@ then listen, you should **only hear** the z-axis and s-axis sound file
 
 # BLOOPERS
  
-First, a quick acknowledgement to my neighbors who may have heard more than a
+Aa quick acknowledgement to my neighbors who may have heard more than a
 few strange sounds coming from my general direction during development.
 
 **Wanna hear a bird chirping on the International Space Station!?**
