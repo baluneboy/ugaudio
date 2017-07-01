@@ -1,0 +1,3 @@
+# cruft files from testing or running during development
+*.png
+*.aiff
