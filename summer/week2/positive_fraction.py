@@ -24,11 +24,11 @@ class PositiveFraction(Fraction):
     def __init__(self, numerator, denominator):
         """Return a PositiveFraction object given numerator & denominator."""
 
-        # put couple/few lines of code here that test if numerator & denominator
-        # have the same sign; if not, then throw an exception
+        # TODO put couple/few lines of code here to test if numerator & denominator
+        # TODO have the same sign; if not, then throw an exception
 
-
-        # now we have same-signed num and den, so just initialize using super
+        # if we get past the check & exception above, then that means we
+        # now have same-signed num and den, so just initialize using super
         super(PositiveFraction, self).__init__(numerator, denominator)
 
     def __str__(self):
@@ -40,12 +40,13 @@ class PositiveFraction(Fraction):
         s += '\n\twe print a PositiveFraction'
         return s
 
-def show_posfrac(n, d):
-    """initialize and print a PositiveFraction
-       given numerator = n and denominator = d
+
+def show_my_fraction(n, d):
+    """initialize and show a PositiveFraction
+       using n for numerator and d for denominator
     """
-    print "numerator   =", n
-    print "denominator =", d
+    print "numerator   = %3d" % n
+    print "denominator = %3d" % d
     pf = PositiveFraction(n, d)
     print "positive fraction =", pf
     print '- ' * 22
@@ -54,20 +55,20 @@ def show_posfrac(n, d):
 def simple_tests():
 
     # no problem here (right?)
-    n1, d1 = 1, 2
-    show_posfrac(n1, d1)
+    num1, den1 = 1, 2
+    show_my_fraction(num1, den1)
 
     # again, no problem here (right?)
-    n2, d2 = -1, -2
-    show_posfrac(n2, d2)
+    num2, den2 = -1, -2
+    show_my_fraction(num2, den2)
 
     # negative numerator
-    n3, d3 = -1, 2
-    show_posfrac(n3, d3)
+    num3, den3 = -1, 2
+    show_my_fraction(num3, den3)
 
     # negative denominator WHY IS THIS LAST TEST NOT BEING CALLED/RUN?
-    n4, d4 = 1, -2
-    show_posfrac(n4, d4)
+    num4, den4 = 1, -2
+    show_my_fraction(num4, den4)
 
 
 if __name__ == '__main__':

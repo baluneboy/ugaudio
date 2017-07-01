@@ -3,6 +3,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$/../../../pims/sandbox" />
     <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$/../week2" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
