@@ -1,17 +1,29 @@
 #!/usr/bin/env python
 
+from numbers import Number
 from fractions import Fraction
 
 
 def same_sign(a, b):
     """return True if a and b both have same sign; else False"""
 
-    # note here that we let zero be both positive and negative
-    both_pos = a >= 0 and b >= 0  # True if both positive
-    both_neg = a <= 0 and b <= 0  # True if both negative
+    # # quick check that inputs are both numerics
+    # both_nums = isinstance(a, Number) and isinstance(b, Number)
+    # if not both_nums:
+    #     raise TypeError('both inputs must be a number')
 
-    # now return True if a & b are same sign; otherwise return False
-    return both_pos or both_neg
+    # --------------------------------------------------------------
+    # ftw I replaced this commented block out in favor of one-liner
+    # # note next 2 lines include zero with positives and negatives
+    # both_pos = a >= 0 and b >= 0  # True if both positive
+    # both_neg = a <= 0 and b <= 0  # True if both negative
+    #
+    # # now return True if a & b are same sign; otherwise return False
+    # return both_pos or both_neg
+    # --------------------------------------------------------------
+
+    # Google got me one-liner, which I modified to include zero as positive
+    return (a >= 0) == (b >= 0)
 
 
 class PositiveFraction(Fraction):
@@ -52,7 +64,7 @@ def show_my_fraction(n, d):
     print '- ' * 22
 
 
-def simple_tests():
+def simple_demo():
 
     # no problem here (right?)
     num1, den1 = 1, 2
@@ -72,4 +84,4 @@ def simple_tests():
 
 
 if __name__ == '__main__':
-    simple_tests()
+    simple_demo()
