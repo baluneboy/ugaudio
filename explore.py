@@ -18,7 +18,7 @@ import numpy as np
 from scipy.io import wavfile
 import matplotlib.pyplot as plt
 from ugaudio.create import aiffread
-from ugaudio.signal import pitchshift, timearray
+#from ugaudio.signal import pitchshift, timearray
 from ugaudio.load import padread
 
 # TODO put more power to explore in user's hands
@@ -29,15 +29,26 @@ def pad_file_percentiles(pad_file):
     """return 5-number summary for pad_file input"""
     # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
     b = padread(pad_file)
-    a = b - b.mean(axis=0)       # demean each column
+    a = b - b.mean(axis=0)  # demean each column
     a[:, 0] = np.sqrt(a[:, 1]**2 + a[:, 2]**2 + a[:, 3]**2)  # replace 1st column with vecmag
-    p = np.percentile(np.abs(a), [50, 95], axis=0)
+    p = np.percentile(np.abs(a[:, 0]), [50, 95], axis=0)
     return p
 
-pad_file = '/misc/yoda/pub/pad/year2017/month06/day21/samses_accel_es05020/2017_06_21_13_41_43.594+2017_06_21_14_01_12.461.es05020'
-p = pad_file_percentiles(pad_file)
-print p
-sys.exit('bye')
+
+def minmax_stats(pad_file):
+    """return num_pts and per-axis max abs values for PAD file"""
+    # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
+    b = padread(pad_file)
+    a = b - b.mean(axis=0)  # demean each column
+    a = np.abs(a)
+    max_mg_values = 1.0e3 * np.max(a[:,1:], axis=0)
+    return  a.shape[0], max_mg_values
+
+
+def show_pad_minmax(num_pts, max_mg_vals):
+    n = '{:,}'.format(num_pts)
+    print "has {:>10s} pts with max(abs(xyz)) [mg] of:".format(n),
+    print "{:9.3f} {:9.3f} {:9.3f}".format(*max_mg_vals)
     
 
 def main():
