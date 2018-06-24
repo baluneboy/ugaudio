@@ -9,6 +9,7 @@ from ugaudio.create import get_chirp
 from ugaudio.signal import normalize
 from ugaudio.pad import PadFile
 
+
 def demo_chirp(fs=44100):
     """simple demo of chirp signal (not representative of ug accel data)"""
 
@@ -44,6 +45,7 @@ def demo_chirp(fs=44100):
     plt.savefig(png_file)    
     print 'wrote demo accel plot file  %s' % png_file
 
+
 def demo_accel():
     """somewhat representative of microgravity accel data from ISS"""
 
@@ -69,6 +71,7 @@ def demo_accel():
     
     print msg + '\n'
 
+
 def demo_accel_file(data_file, axis='x'):
     """demo arbitrary file with microgravity accel data from ISS"""
 
@@ -89,10 +92,12 @@ def demo_accel_file(data_file, axis='x'):
     
     print msg + '\n'
 
+
 def show_samplerate(header_file):
     """return sample rate (samples/sec) for input header file"""
     pad_file = PadFile(header_file)
     print pad_file
+
 
 def demo_build_numpy_array(sensor, y, m, d):
     import glob
@@ -120,9 +125,66 @@ def demo_build_numpy_array(sensor, y, m, d):
         arr = np.append(arr, a, axis=0)
         #print arr.shape        
     return arr    
-    
+
+
+def demo_batch_files():
+
+    import glob
+    from ugaudio.load import padread
+
+    sensor = '121f04'
+    pad_dir = '/Users/ken/Downloads/pad'
+    glob_pat = '%s/*%s' % (pad_dir, sensor)
+    filenames = glob.glob(glob_pat)
+
+    arr = np.empty((0, 5), dtype=np.float32)    # float32 matches what we read from PAD file
+
+    # FIXME how best to filter filenames at this point for like common header, min file dur, etc.
+
+    # TODO in filenames iteration, we need to add to histogram buckets, update count, etc. for running hist
+
+    for fname in filenames:
+        # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
+        a = padread(fname)
+        a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)  # demean x, y and z columns
+        v = np.array(np.sqrt(a[:, 1]**2 + a[:, 2]**2 + a[:, 3]**2))  # compute vector magnitude
+        #print v
+        #new_col = np.reshape(v, (-1, 1))
+        ncols = 1
+        v.shape = (v.size//ncols, ncols)
+        # print v.shape, a.shape
+        a = np.append(a, v, axis=1)  # append to get 5th column for vecmag
+        # print v.shape, a.shape
+        arr = np.append(arr, a, axis=0)
+        print arr.shape, fname
+
+    fig = plt.figure(figsize=(7.5, 10.0))
+
+    axes1 = fig.add_subplot(3, 1, 1)
+    axes2 = fig.add_subplot(3, 1, 2)
+    axes3 = fig.add_subplot(3, 1, 3)
+
+    axes1.set_ylabel('x-axis')
+    # axes1.plot(np.mean(arr, axis=0))
+    axes1.plot(arr[:, 1])
+
+    axes2.set_ylabel('y-axis')
+    # axes2.plot(np.max(arr, axis=0))
+    axes2.plot(arr[:, 2])
+
+    axes3.set_ylabel('z-axis')
+    # axes3.plot(np.min(arr, axis=0))
+    axes3.plot(arr[:, 3])
+
+    fig.tight_layout()
+    plt.show()
+
+
 if __name__ == "__main__":
-    
+
+    demo_batch_files()
+    raise SystemExit
+
     ## get sample rate from header file
     #header_file = '/misc/yoda/pub/pad/year2017/month04/day01/sams2_accel_121f04/2017_04_01_20_55_05.415+2017_04_01_21_05_05.426.121f04.header'
     #data_file = header_file.replace('.header', '')
@@ -132,7 +194,8 @@ if __name__ == "__main__":
     #demo_chirp()
     
     # plot SAMS TSH (es06) data file (just one axis)
-    data_file = '/tmp/2017_05_22_23_39_02.803+2017_05_22_23_49_02.861.es06'
+    data_file = '/Users/ken/Downloads/pad/2018_06_13_11_33_51.247+2018_06_13_11_43_51.250.121f04'
+    data_file = '/Users/ken/Downloads/pad/2018_06_13_22_04_05.377+2018_06_13_22_14_05.381.121f04'
     #show_samplerate(data_file)
     demo_accel_file(data_file, axis='x') # just x-axis here
     
