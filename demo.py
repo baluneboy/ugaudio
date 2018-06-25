@@ -99,7 +99,7 @@ def show_samplerate(header_file):
     print pad_file
 
 
-def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, firstN=None):
+def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, num_files=None):
     import glob
     import datetime
     import numpy as np
@@ -118,13 +118,13 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, firstN=None):
     filt_fnames = list( ffp(fnames) )
     print 'and %d files after filtering' % len(filt_fnames)    
     
-    if firstN is None:
-        firstN = len(filt_fnames)    
+    if num_files is None:
+        num_files = len(filt_fnames)
     
     file_count = 0
     arr = np.empty((0, 5), dtype=np.float32)  # float32 matches what we read from PAD file
     print '\nBEGIN'
-    for fname in filt_fnames[0:firstN]:
+    for fname in filt_fnames[0:num_files]:
         # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
         file_count += 1
         a = padread(fname)
@@ -144,8 +144,8 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, firstN=None):
     return arr    
 
 
-def demo_batch2(sensor, y, m, d, firstN=None):
-    arr = demo_build_numpy_array(sensor, y, m, d, firstN=firstN)
+def demo_batch2(sensor, y, m, d, num_files=None):
+    arr = demo_build_numpy_array(sensor, y, m, d, num_files=num_files)
     
     fig = plt.figure(figsize=(7.5, 10.0))
 
@@ -226,7 +226,7 @@ if __name__ == "__main__":
 
     sensor = '121f04'
     y, m, d = 2018, 6, 13
-    demo_batch2(sensor, y, m, d, firstN=3)
+    demo_batch2(sensor, y, m, d, num_files=3)
     raise SystemExit
 
     ## get sample rate from header file
