@@ -99,23 +99,38 @@ def show_samplerate(header_file):
     print pad_file
 
 
-def demo_build_numpy_array(sensor, y, m, d):
+def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, firstN=None):
     import glob
     import datetime
     import numpy as np
     from ugaudio.load import padread
     from pims.utils.pimsdateutil import datetime_to_ymd_path
+    from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad
+    
+    ffp = FileFilterPipeline(MinDurMinutesPad(minMinutes))
+    print ffp
+    
     ymd_dir = datetime_to_ymd_path(datetime.date(y, m, d))
     glob_pat = '%s/*_accel_%s/*%s' % (ymd_dir, sensor, sensor)
     fnames = glob.glob(glob_pat)
-    fnames = ['/tmp/rogue_pad_file.sensor']
-    arr = np.empty((0, 5), dtype=np.float32)    # float32 matches what we read from PAD file
-    for fname in fnames:
+    
+    print 'we have %d files before filtering' % len(fnames),
+    filt_fnames = list( ffp(fnames) )
+    print 'and %d files after filtering' % len(filt_fnames)    
+    
+    if firstN is None:
+        firstN = len(filt_fnames)    
+    
+    file_count = 0
+    arr = np.empty((0, 5), dtype=np.float32)  # float32 matches what we read from PAD file
+    print '\nBEGIN'
+    for fname in filt_fnames[0:firstN]:
         # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
+        file_count += 1
         a = padread(fname)
         a[:,1:4] = a[:,1:4] - a[:,1:4].mean(axis=0)  # demean x, y and z columns
         v = np.array( np.sqrt(a[:,1]**2 + a[:,2]**2 + a[:,3]**2) )  # compute vector magnitude
-        print v
+        #print v
         #new_col = np.reshape(v, (-1, 1))
         ncols = 1
         v.shape = (v.size//ncols, ncols)
@@ -123,9 +138,36 @@ def demo_build_numpy_array(sensor, y, m, d):
         a = np.append(a, v, axis=1) # append to get 5th column for vecmag
         #print v.shape, a.shape
         arr = np.append(arr, a, axis=0)
-        #print arr.shape        
+        #print arr.shape
+        print file_count, arr.shape, fname
+    print 'END'
     return arr    
 
+
+def demo_batch2(sensor, y, m, d, firstN=None):
+    arr = demo_build_numpy_array(sensor, y, m, d, firstN=firstN)
+    
+    fig = plt.figure(figsize=(7.5, 10.0))
+
+    axes1 = fig.add_subplot(3, 1, 1)
+    axes2 = fig.add_subplot(3, 1, 2)
+    axes3 = fig.add_subplot(3, 1, 3)
+
+    axes1.set_ylabel('x-axis')
+    # axes1.plot(np.mean(arr, axis=0))
+    axes1.plot(arr[:, 1])
+
+    axes2.set_ylabel('y-axis')
+    # axes2.plot(np.max(arr, axis=0))
+    axes2.plot(arr[:, 2])
+
+    axes3.set_ylabel('z-axis')
+    # axes3.plot(np.min(arr, axis=0))
+    axes3.plot(arr[:, 3])
+
+    fig.tight_layout()
+    plt.show()
+    
 
 def demo_batch_files():
 
@@ -178,11 +220,13 @@ def demo_batch_files():
 
     fig.tight_layout()
     plt.show()
-
-
+ 
+    
 if __name__ == "__main__":
 
-    demo_batch_files()
+    sensor = '121f04'
+    y, m, d = 2018, 6, 13
+    demo_batch2(sensor, y, m, d, firstN=3)
     raise SystemExit
 
     ## get sample rate from header file
