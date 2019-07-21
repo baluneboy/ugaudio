@@ -105,9 +105,12 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, num_files=None):
     import numpy as np
     from ugaudio.load import padread
     from pims.utils.pimsdateutil import datetime_to_ymd_path
-    from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad
+    from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad, HeaderMatchesRateCutoffLocSsaPad
     
-    ffp = FileFilterPipeline(MinDurMinutesPad(minMinutes))
+    location = 'LAB1P2, ER7, Cold Atom Lab Front Panel'
+    fs, fc = 500, 200
+    
+    ffp = FileFilterPipeline(MinDurMinutesPad(minMinutes), HeaderMatchesRateCutoffLocSsaPad(fs, fc, location))
     print ffp
     
     ymd_dir = datetime_to_ymd_path(datetime.date(y, m, d))
