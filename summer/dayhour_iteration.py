@@ -57,9 +57,9 @@ def simple_demo_rev():
     # get files for all of start_str's day
     print(prev_day.strftime('%Y-%m-%d'), '<< get prev_day files before iteration begins')
 
-    # iterate down from stop_str's day/hour down to, and including start_str's day/hour
+    # iterate down from last dh of prev_day's day/hour down to, and including start_str's day/hour
     dhr = pd.date_range(start_str, stop_str, freq='1H')[:-1]
-    for dh in dhr[::-1]:
+    for dh in dhr[::-1]:  # fancy indexing gets us the reversed chronological ordering
 
         # if it's high noon, then get list of matching files for prior day and extend deque
         if dh.hour == 12:
