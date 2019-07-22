@@ -97,5 +97,7 @@ def main():
             key_sound[key].fadeout(50) # stops with 50ms fadeout
             is_playing[key] = False
 
+
 if __name__ == '__main__':
-    main()  
+
+    main()
