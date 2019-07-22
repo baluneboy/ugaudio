@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import numpy as np
 import pandas as pd
 from collections import deque
 from dateutil import parser
@@ -12,6 +13,18 @@ from dateutil.relativedelta import relativedelta
 # print(i5)
 # print(i4.overlaps(i5))
 # raise SystemExit
+
+a = np.arange(12).reshape(3, 4)
+min_values = np.nanmin(a, axis=0)
+max_values = np.nanmax(a, axis=0)
+std_values = np.nanstd(a, axis=0)
+
+min_str = '{:.2f},{:.2f},{:.2f}'.format(*min_values)
+max_str = '{:.2f},{:.2f},{:.2f}'.format(*max_values)
+std_str = '{:.2f},{:.2f},{:.2f}'.format(*std_values)
+print('%s,%s,%s' % (min_str, max_str, std_str))
+
+raise SystemExit
 
 
 def simple_demo_fwd():
