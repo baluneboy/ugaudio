@@ -76,6 +76,7 @@ def main():
 
     # for convenience in call below, let's rename args here
     pad_dir = args.paddir
+    out_dir = args.outdir
     fs, fc = args.rate, args.cutoff
     day_start, day_stop = args.start, args.end
     nfft = args.nfft
@@ -83,9 +84,16 @@ def main():
     nfiles = 4
 
     # iterate over sensors
+    daily_running_tallies = []
     for sensor in args.sensors:
         location = LOCATIONS[sensor]
-        drt = spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=nfiles, pad_dir=pad_dir)
+        drt = spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=nfiles,
+                                  pad_dir=pad_dir, out_dir=out_dir, do_plot=False)
+        daily_running_tallies.append(drt)
+
+    # iterate over daily running (spec avg) tallies
+    for drt in daily_running_tallies:
+        print drt
 
     return 0  # return zero for success, which is typical Linux command line behavior
 

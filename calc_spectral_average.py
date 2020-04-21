@@ -7,10 +7,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import welch
+from scipy.io import savemat
 from ugaudio.load import padread
 from pims.utils.pimsdateutil import datetime_to_ymd_path
 from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad, HeaderMatchesRateCutoffLocSsaPad
-
+from pims.files.utils import mkdir_p
 
 class PsdAccumulator(object):
     """A class to accumulate PSDs for spectral averaging.
@@ -25,11 +26,6 @@ class PsdAccumulator(object):
         self.nperseg = nperseg
         self.f, self.psd = None, None
         self.count = 0
-
-    def _empty_psd(self):
-        a = np.empty((self.nperseg / 2 + 1, 4))  # 4 columns x,y,z,v
-        a.fill(np.nan)
-        return a
 
     def append(self, txyz, verbose=False):
         """compute array of PSDs from acceleration vs. time value input array, append & increment"""
@@ -76,7 +72,14 @@ class PsdAccumulator(object):
     def spectral_avg(self):
         return self.psd / self.count
 
-    def plot(self):
+    def save_cumulative_sum(self, file_name):
+        mdict = {'deltaf': self.f[1],
+              'psd': self.psd,
+              'count': self.count
+              }
+        savemat(file_name, mdict)
+
+    def pdf_plot(self):
         spec_avg = self.spectral_avg()
         plt.semilogy(self.f, spec_avg)
         plt.xlabel('frequency [Hz]')
@@ -105,10 +108,10 @@ class PsdRunningTally(object):
             self.pa.append(a)
             print file_count, os.path.basename(fname)
         print 'END'
-        self.pa.plot()
 
 
-def spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, minMinutes=5.5, num_files=None, pad_dir='D:/pad'):
+def spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, minMinutes=5.5, num_files=None, pad_dir='D:/pad',
+                     out_dir='C:/temp/psdsum'):
 
     # create PSD accumulator object
     pa = PsdAccumulator(fs, nperseg=nfft)
@@ -137,50 +140,30 @@ def spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, minMinutes=5.5, nu
     # do running tally
     prt.run()
 
+    # save pdf plot
+    psdsum_bname = '%4d-%02d-%02d_%s_psdsum.mat' % (y, m, d, sensor)
+    psdsum_dname = os.path.join(out_dir, 'year%d' % y, 'month%02d' % m)
+    if not os.path.exists(psdsum_dname):
+        mkdir_p(psdsum_dname)
+    psdsum_file = os.path.join(psdsum_dname, psdsum_bname)
+    prt.pa.save_cumulative_sum(psdsum_file)
+
+    # # create pdf plot
+    # prt.pa.pdf_plot()
+
     return prt
 
 
-def demo_psd_running_tally(sensor, y, m, d, nfft, fs, fc, location, minMinutes=5.5, num_files=None, pad_dir='D:/pad'):
-
-    pa = PsdAccumulator(fs, nperseg=nfft)
-
-    ffp = FileFilterPipeline(MinDurMinutesPad(minMinutes), HeaderMatchesRateCutoffLocSsaPad(fs, fc, location))
-    print ffp
-
-    ymd_dir = datetime_to_ymd_path(datetime.date(y, m, d), base_dir=pad_dir)
-    glob_pat = '%s/*_accel_%s/*%s' % (ymd_dir, sensor, sensor)
-    fnames = glob.glob(glob_pat)
-
-    print glob_pat
-    print 'we have %d files before filtering' % len(fnames),
-    filt_fnames = list(ffp(fnames))
-    print 'and %d files after filtering' % len(filt_fnames)
-
-    if num_files is None:
-        num_files = len(filt_fnames)
-    print 'NOTE: We are SKIPPING some for testing, so we only have %d files now' % num_files
-    fnames = filt_fnames[0:num_files]
-
-    file_count = 0
-    print '\nBEGIN'
-    for fname in fnames:
-        # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
-        file_count += 1
-        a = padread(fname)
-        a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)  # demean x, y and z columns
-        pa.append(a)
-        print file_count, os.path.basename(fname)
-    print 'END'
-
-    return pa
-
-
-def spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=None, pad_dir='d:/pad'):
+def spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=None, pad_dir='d:/pad',
+                        out_dir='c:/temp/psdsum', do_plot=True):
     dr = pd.date_range(day_start, day_stop, freq='1D')
     daily_running_tallies = []
     for d in dr:
         y, m, d = d.year, d.month, d.day
-        prt = spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, num_files=num_files, pad_dir=pad_dir)
+        prt = spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, num_files=num_files, pad_dir=pad_dir,
+                               out_dir=out_dir)
+        if do_plot:
+            prt.pa.pdf_plot()
         daily_running_tallies.append(prt)
     return daily_running_tallies
 
@@ -195,10 +178,11 @@ if __name__ == "__main__":
     fs, fc = 500.0, 200.0
 
     day_start = datetime.date(2020, 4, 5)
-    day_stop = datetime.date(2020, 4, 6)
+    day_stop = datetime.date(2020, 4, 7)
 
     nfft = 32768
 
-    spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=3, pad_dir=pad_dir)
+    spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=22, pad_dir=pad_dir,
+                        out_dir='c:/temp/psdsum', do_plot=False)
 
     print 'done'

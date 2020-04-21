@@ -20,6 +20,6 @@ DEFAULT_NFFT = 32768  # num pts for Nfft
 DEFAULT_START = str(datetime.datetime.now().date() - datetime.timedelta(days=2))  # start date (TWODAYSAGO)
 DEFAULT_END = DEFAULT_START
 DEFAULT_PADDIR = 'd:/pad' if os.name == 'nt' else '/misc/yoda/pub/pad'  # PAD directory
-DEFAULT_OUTDIR = 'c:/temp' if os.name == 'nt' else '/tmp'  # results/output directory
+DEFAULT_OUTDIR = 'c:/temp/psdsum' if os.name == 'nt' else '/tmp'  # results/output directory
 DEFAULT_SENSORS = [k for k in LOCATIONS.keys()]
 DEFAULT_SENSORS.sort()
