@@ -9,10 +9,11 @@ import re
 import logging
 import argparse
 from dateutil import parser as dparser
+from pims.signal.rounding import is_power_of_two
 
-from ugaudio.defaults import DEFAULT_OUTDIR
-from ugaudio.defaults import DEFAULT_SENSORS, DEFAULT_RATE, DEFAULT_CUTOFF
-from ugaudio.defaults import DEFAULT_START
+from defaults import DEFAULT_OUTDIR, DEFAULT_PADDIR
+from defaults import DEFAULT_SENSORS, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_NFFT
+from defaults import DEFAULT_START, DEFAULT_END
 
 # create logger
 module_logger = logging.getLogger('ugaudio.argparser')
@@ -35,6 +36,20 @@ def outdir_str(d):
     except OSError:
         raise argparse.ArgumentTypeError('could not create "%s" directory' % logs_dir)
     return f
+
+
+def nfft_int(n):
+    """return valid Nfft as int value converted from string, n"""
+    try:
+        value = int(n)
+    except Exception as e:
+        raise argparse.ArgumentTypeError('%s' % e)
+
+    # FIXME this is serious hard-coded kludge for now until we can make this more robust
+    if not is_power_of_two(value):
+        raise argparse.ArgumentTypeError('Nfft should really be power of two for now')
+
+    return value
 
 
 def rate_str(r):
@@ -65,23 +80,23 @@ def cutoff_str(g):
     return value
 
 
-def start_str(t):
-    """ return string provided only if it is a valid time at least 30 minutes from now
+def dtm_date(t):
+    """ return string provided only if it is a valid date
 
-    :param t: string for time to start
-    :return: string for time to start
+    :param t: string for date to start
+    :return: datetime.date object for start
     """
-    return dparser.parse(t)
+    return dparser.parse(t).date()
 
 
-def sensor_str(s):
-    """return string provided only if it is a valid esXX"""
-    # TODO agree on consistent convention of string to refer to sensor (e.g. es09 or tshes-13); which is most prevalent?
-    pat = re.compile(r'es\d{2}$', re.IGNORECASE)
-    if re.match(pat, s):
-        return s.lower()
-    else:
-        raise argparse.ArgumentError('"%s" does not appear to be a valid string for a TSH (e.g. es09)')
+def sensors_list(s):
+    """return list of strings"""
+    slist = s.split(' ')
+    pat = re.compile(r'es\d{2}$|121f\d{2}$', re.IGNORECASE)
+    sensors = [se for se in slist if re.match(pat, se)]
+    if len(sensors) == 0:
+        raise argparse.ArgumentError('"%s" does not appear to contain any valid sensor strings (e.g. es09 or 121f02)')
+    return sensors
 
 
 def parse_inputs():
@@ -94,27 +109,37 @@ def parse_inputs():
     group.add_argument('-v', '--verbose', action='store_true')
     group.add_argument('-q', '--quiet', action='store_true')
 
+    # nfft
+    help_nfft = "Nfft; default = %s" % str(DEFAULT_NFFT)
+    parser.add_argument('-n', '--nfft', default=DEFAULT_NFFT, type=nfft_int, help=help_nfft)
+
     # sample rate
     help_rate = "sample rate (sa/sec); default = %s" % str(DEFAULT_RATE)
     parser.add_argument('-r', '--rate', default=DEFAULT_RATE, type=rate_str, help=help_rate)
 
     # cutoff
     help_cutoff = "cutoff; default = %s" % str(DEFAULT_CUTOFF)
-    parser.add_argument('-g', '--gain', default=DEFAULT_CUTOFF, type=cutoff_str, help=help_cutoff)
+    parser.add_argument('-c', '--cutoff', default=DEFAULT_CUTOFF, type=cutoff_str, help=help_cutoff)
 
-    # sensor
-    # help_sensor = "sensor; default is %s" % DEFAULT_SENSOR
-    # parser.add_argument('-s', '--sensor', default=DEFAULT_SENSOR, type=sensor_str, help=help_sensor)
+    # sensors
+    help_sensors = "sensors; default is %s" % DEFAULT_SENSORS
+    parser.add_argument('-s', '--sensors', default=DEFAULT_SENSORS, type=sensors_list, help=help_sensors)
+
+    # PAD directory
+    help_paddir = 'PAD dir; default is %s' % DEFAULT_PADDIR
+    parser.add_argument('-p', '--paddir', default=DEFAULT_PADDIR, type=folder_str, help=help_paddir)
 
     # output directory
     help_outdir = 'output dir; default is %s' % DEFAULT_OUTDIR
     parser.add_argument('-o', '--outdir', default=DEFAULT_OUTDIR, type=outdir_str, help=help_outdir)
 
-    # start time
-    help_start = 'start time; default is %s' % DEFAULT_START
-    parser.add_argument('-t', '--start', default=DEFAULT_START, type=start_str, help=help_start)
+    # start date
+    help_start = 'start date; default is %s' % DEFAULT_START
+    parser.add_argument('-t', '--start', default=DEFAULT_START, type=dtm_date, help=help_start)
 
-    # FIXME we do not check that log directory seen in log_conf_file matches relative to outdir, assumed this above
+    # end date
+    help_end = 'end date; default is %s' % DEFAULT_END
+    parser.add_argument('-e', '--end', default=DEFAULT_END, type=dtm_date, help=help_end)
 
     # parse arguments
     module_logger.debug('calling parse_args')

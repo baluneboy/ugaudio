@@ -57,13 +57,23 @@ class AlternateIntegers(object):
         g.writeframes(strdata)
         g.close()
 
+    def write_pad(self, fname, fs=500):
+        """Write dummy pad file to fname with alternating integer values."""
+        N = self.numpts
+        T = float(N/fs)
+        t = np.linspace(0, T, N, endpoint=False)
+        x = self.alternate_integers()
+        data = np.c_[t, x, x, x]  # we are writing same x to all 3 axes (last 3) columns
+        data.astype('float32').tofile(fname)
+
+
 # Write binary (PAD-like) file.
 def padwrite(x, y, z, fs, fname, return_time=False):
     """Write binary (PAD-like) file."""
     N = float(len(x))
     T = float(N/fs)
     t = np.linspace(0, T, N, endpoint=False)
-    data = np.c_[ t, x, y, z ]
+    data = np.c_[t, x, y, z]
     data.astype('float32').tofile(fname)
     if return_time:
         return t
@@ -154,5 +164,27 @@ def scenario1():
     z = 1e-3*chirp(t, f0=0.1, f1=200, t1=19.5, method='linear')
     fname = '/Users/ken/dev/programs/python/ugaudio/samples/scenario1.pad'
     padwrite(x, y, z, 11025, fname)
+
+
+def write_dummy_pad():
+    """generate a linear chirp with representative ranges
+    for amplitude and frequency; representative of "loud" International Space
+    Station vibratory microgravity environment, we should expect a portion of
+    that signal (below 20 Hz and perhaps even a bit higher than that) to be
+    inaudible; my ears filter with pass-band starting at about 40 Hz or, my
+    speakers did not reproduce good bass -- it's all about that bass
+    """
+    t = np.linspace(0, 20, 11025*20, endpoint=False)
+    x = 1e-6*chirp(t, f0=0.1, f1=200, t1=19.5, method='linear')
+    y = 5e-4*chirp(t, f0=0.1, f1=200, t1=19.5, method='linear')
+    z = 1e-3*chirp(t, f0=0.1, f1=200, t1=19.5, method='linear')
+    fname = '/Users/ken/dev/programs/python/ugaudio/samples/scenario1.pad'
+    padwrite(x, y, z, 11025, fname)
+
+ai = AlternateIntegers(value=2, numpts=162000)
+ai.write_pad('C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_22_00_00.000+2020_04_18_22_05_29.000.121f04.header', fs=500.0)
+
+ai = AlternateIntegers(value=2, numpts=166500)
+ai.write_pad('C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_23_00_00.000+2020_04_18_23_05_33.000.121f04.header', fs=500.0)
 
 #scenario1()

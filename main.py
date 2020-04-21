@@ -8,8 +8,10 @@ import logging
 import logging.config
 import numpy as np
 
-from ugaudio.inputs import argparser
-from ugaudio.defaults import LOGDIR, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_START, DEFAULT_SENSORS, DEFAULT_OUTDIR
+from inputs import argparser
+from defaults import LOCATIONS
+from defaults import LOGDIR, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_START, DEFAULT_SENSORS, DEFAULT_OUTDIR
+from calc_spectral_average import spec_avg_date_range
 
 
 def get_logger(log_file):
@@ -64,7 +66,7 @@ def get_inputs(module_logger):
 def main():
 
     # create logger
-    log_file = os.path.join(LOGDIR, 'logging', 'ugaudio.log')
+    log_file = os.path.join(LOGDIR, 'logs', 'ugaudio.log')
     module_logger = get_logger(log_file)
     module_logger.info('- STARTING MAIN UGAUDIO APP - -')
     module_logger.debug('log_file = %s' % log_file)
@@ -72,7 +74,18 @@ def main():
     # get input arguments
     args = get_inputs(module_logger)
 
-    print args
+    # for convenience in call below, let's rename args here
+    pad_dir = args.paddir
+    fs, fc = args.rate, args.cutoff
+    day_start, day_stop = args.start, args.end
+    nfft = args.nfft
+
+    nfiles = 4
+
+    # iterate over sensors
+    for sensor in args.sensors:
+        location = LOCATIONS[sensor]
+        drt = spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=nfiles, pad_dir=pad_dir)
 
     return 0  # return zero for success, which is typical Linux command line behavior
 

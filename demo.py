@@ -8,6 +8,7 @@ from ugaudio.load import padread
 from ugaudio.create import get_chirp
 from ugaudio.signal import normalize
 from ugaudio.pad import PadFile
+from scipy.signal import welch
 
 
 def demo_chirp(fs=44100):
@@ -99,10 +100,9 @@ def show_samplerate(header_file):
     print pad_file
 
 
-def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, num_files=None):
+def demo_build_numpy_array(sensor, y, m, d, minMinutes=5.5, num_files=None, base_dir='C:/temp/pad'):
     import glob
     import datetime
-    import numpy as np
     from ugaudio.load import padread
     from pims.utils.pimsdateutil import datetime_to_ymd_path
     from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad, HeaderMatchesRateCutoffLocSsaPad
@@ -113,10 +113,11 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, num_files=None):
     ffp = FileFilterPipeline(MinDurMinutesPad(minMinutes), HeaderMatchesRateCutoffLocSsaPad(fs, fc, location))
     print ffp
     
-    ymd_dir = datetime_to_ymd_path(datetime.date(y, m, d))
+    ymd_dir = datetime_to_ymd_path(datetime.date(y, m, d), base_dir=base_dir)
     glob_pat = '%s/*_accel_%s/*%s' % (ymd_dir, sensor, sensor)
     fnames = glob.glob(glob_pat)
-    
+
+    print glob_pat
     print 'we have %d files before filtering' % len(fnames),
     filt_fnames = list( ffp(fnames) )
     print 'and %d files after filtering' % len(filt_fnames)    
@@ -131,8 +132,8 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, num_files=None):
         # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
         file_count += 1
         a = padread(fname)
-        a[:,1:4] = a[:,1:4] - a[:,1:4].mean(axis=0)  # demean x, y and z columns
-        v = np.array( np.sqrt(a[:,1]**2 + a[:,2]**2 + a[:,3]**2) )  # compute vector magnitude
+        a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)  # demean x, y and z columns
+        v = np.array(np.sqrt(a[:, 1]**2 + a[:, 2]**2 + a[:, 3]**2))  # compute vector magnitude
         #print v
         #new_col = np.reshape(v, (-1, 1))
         ncols = 1
@@ -144,11 +145,52 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=2.0, num_files=None):
         #print arr.shape
         print file_count, arr.shape, fname
     print 'END'
-    return arr    
+    return arr
 
 
-def demo_batch2(sensor, y, m, d, num_files=None):
-    arr = demo_build_numpy_array(sensor, y, m, d, num_files=num_files)
+def psd_xyzv(txyz, fs=500.0, nperseg=32768):
+    """return array of PSDs from acceleration vs. time value input array"""
+
+    pa = PsdAccumulator(500.0, nperseg=32768)
+
+    # delete first (time) column
+    xyz = np.delete(txyz, 0, axis=1)
+
+    # calculate how many segments we can fit into data length
+    N = xyz.shape[0]
+    numsegs = N // nperseg
+    numpts = nperseg * numsegs
+
+    # complain about not enough data for at least one segment and early return
+    if numsegs < 1:
+        print '%d pts is not enough even one segment of length %d' % (N, nperseg)
+        return
+
+    else:
+        print 'numsegs = %d, nperseg = %d, numpts = %d' % (numsegs, nperseg, numpts)
+
+    # now do actual trim (resize) here
+    xyz = np.resize(xyz, (numpts, 3))
+
+    # compute PSD for each column (each axis)
+    f, Pxx = welch(xyz, fs, nperseg=nperseg, axis=0)
+
+    print Pxx.shape
+
+    # calculate overall PSD
+    v = np.array(np.sqrt(Pxx[:, 0] ** 2 + Pxx[:, 1] ** 2 + Pxx[:, 2] ** 2))  # RSS(Pxx,Pyy,Pzz)
+
+    # append RSS as 4th column
+    Pxx = np.append(Pxx, np.reshape(v, (Pxx.shape[0], -1)) , axis=1)
+
+    plt.semilogy(f, Pxx)
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('PSD [V**2/Hz]')
+    plt.show()
+
+
+def demo_batch2(sensor, y, m, d, num_files=None, base_dir='C:/temp/pad'):
+    arr = demo_build_numpy_array(sensor, y, m, d, num_files=num_files, base_dir=base_dir)
     
     fig = plt.figure(figsize=(7.5, 10.0))
 
@@ -228,8 +270,34 @@ def demo_batch_files():
 if __name__ == "__main__":
 
     sensor = '121f04'
-    y, m, d = 2018, 6, 13
-    demo_batch2(sensor, y, m, d, num_files=3)
+    y, m, d = 2020, 4, 18
+    pa = demo_psd_running_tally(sensor, y, m, d, num_files=9, base_dir='C:/temp/pad')
+    pa.plot()
+    raise SystemExit
+
+    fs = 500.0
+    pa = PsdAccumulator(fs, nperseg=32768)
+
+    fname = 'C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_00_17_15.877+2020_04_18_00_27_15.890.121f04'
+    txyz = padread(fname)
+    pa.append(txyz)
+    pa.append(txyz)
+    pa.append(txyz)
+    pa.plot()
+
+    print "count", pa.count
+    print pa.psd
+    print pa.spectral_avg()
+    raise SystemExit
+
+    fname = 'C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_00_17_15.877+2020_04_18_00_27_15.890.121f04'
+    txyz = padread(fname)
+    psd_xyzv(txyz, fs=500.0, nperseg=32768)
+    raise SystemExit
+
+    sensor = '121f04'
+    y, m, d = 2020, 4, 18
+    demo_batch2(sensor, y, m, d, num_files=9, base_dir='C:/temp/pad')
     raise SystemExit
 
     ## get sample rate from header file
@@ -240,11 +308,11 @@ if __name__ == "__main__":
     ## generate artficial chirp, then create sound file (AIFF format) and plot it (PNG format)
     #demo_chirp()
     
-    # plot SAMS TSH (es06) data file (just one axis)
+    # plot SAMS data file (just one axis)
     data_file = '/Users/ken/Downloads/pad/2018_06_13_11_33_51.247+2018_06_13_11_43_51.250.121f04'
-    data_file = '/Users/ken/Downloads/pad/2018_06_13_22_04_05.377+2018_06_13_22_14_05.381.121f04'
+    data_file = 'C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_00_17_15.877+2020_04_18_00_27_15.890.121f04'
     #show_samplerate(data_file)
-    demo_accel_file(data_file, axis='x') # just x-axis here
+    demo_accel_file(data_file, axis='x')  # just x-axis here
     
     ## build numpy array (appending rows for each PAD file and appending vecmag column along the way)
     #arr = demo_build_numpy_array('121f03006', 2017, 11, 1)
