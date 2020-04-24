@@ -23,3 +23,5 @@ DEFAULT_PADDIR = 'd:/pad' if os.name == 'nt' else '/misc/yoda/pub/pad'  # PAD di
 DEFAULT_OUTDIR = 'c:/temp/psdsum' if os.name == 'nt' else '/tmp'  # results/output directory
 DEFAULT_SENSORS = [k for k in LOCATIONS.keys()]
 DEFAULT_SENSORS.sort()
+DEFAULT_NFILES = None
+DEFAULT_PLOTRANGEPCT = 90.0

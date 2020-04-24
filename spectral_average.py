@@ -9,9 +9,9 @@ import logging.config
 import numpy as np
 
 from inputs import argparser
-from defaults import LOCATIONS
-from defaults import LOGDIR, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_START, DEFAULT_SENSORS, DEFAULT_OUTDIR
-from calc_spectral_average import spec_avg_date_range
+from spectral_average_defaults import LOCATIONS
+from spectral_average_defaults import LOGDIR, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_START, DEFAULT_SENSORS, DEFAULT_OUTDIR
+from spectral_average_calc import spec_avg_date_range
 
 
 def get_logger(log_file):
@@ -81,7 +81,7 @@ def main():
     day_start, day_stop = args.start, args.end
     nfft = args.nfft
 
-    nfiles = 4
+    nfiles = args.nfiles
 
     # iterate over sensors
     daily_running_tallies = []

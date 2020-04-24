@@ -12,7 +12,7 @@ from dateutil import parser as dparser
 from pims.signal.rounding import is_power_of_two
 
 from defaults import DEFAULT_OUTDIR, DEFAULT_PADDIR
-from defaults import DEFAULT_SENSORS, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_NFFT
+from defaults import DEFAULT_SENSORS, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_NFFT, DEFAULT_NFILES
 from defaults import DEFAULT_START, DEFAULT_END
 
 # create logger
@@ -36,6 +36,15 @@ def outdir_str(d):
     except OSError:
         raise argparse.ArgumentTypeError('could not create "%s" directory' % logs_dir)
     return f
+
+
+def nfiles_int(n):
+    """return valid num_files as int value converted from string, n"""
+    try:
+        value = int(n)
+    except Exception as e:
+        raise argparse.ArgumentTypeError('%s' % e)
+    return value
 
 
 def nfft_int(n):
@@ -108,6 +117,10 @@ def parse_inputs():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-v', '--verbose', action='store_true')
     group.add_argument('-q', '--quiet', action='store_true')
+
+    # nfiles
+    help_nfiles = "nfiles to preview (for testing); default = %s" % str(DEFAULT_NFILES)
+    parser.add_argument('-g', '--nfiles', default=DEFAULT_NFILES, type=nfiles_int, help=help_nfiles)
 
     # nfft
     help_nfft = "Nfft; default = %s" % str(DEFAULT_NFFT)

@@ -13,6 +13,7 @@ from pims.utils.pimsdateutil import datetime_to_ymd_path
 from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad, HeaderMatchesRateCutoffLocSsaPad
 from pims.files.utils import mkdir_p
 
+
 class PsdAccumulator(object):
     """A class to accumulate PSDs for spectral averaging.
 
@@ -72,7 +73,7 @@ class PsdAccumulator(object):
     def spectral_avg(self):
         return self.psd / self.count
 
-    def save_cumulative_sum(self, file_name):
+    def save_psdsum_matfile(self, file_name):
         mdict = {'deltaf': self.f[1],
               'psd': self.psd,
               'count': self.count
@@ -140,13 +141,14 @@ def spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, minMinutes=5.5, nu
     # do running tally
     prt.run()
 
-    # save pdf plot
-    psdsum_bname = '%4d-%02d-%02d_%s_psdsum.mat' % (y, m, d, sensor)
+    # save pdf plot (e.g. "C:\temp\psdsum\year2020\month04\2020-04-07_121f03_500p0_32768_psdsum.mat")
+    fs_str = str(fs).replace('.', 'p')
+    psdsum_bname = '%4d-%02d-%02d_%s_%s_%d_psdsum.mat' % (y, m, d, sensor, fs_str, pa.nperseg)
     psdsum_dname = os.path.join(out_dir, 'year%d' % y, 'month%02d' % m)
     if not os.path.exists(psdsum_dname):
         mkdir_p(psdsum_dname)
     psdsum_file = os.path.join(psdsum_dname, psdsum_bname)
-    prt.pa.save_cumulative_sum(psdsum_file)
+    prt.pa.save_psdsum_matfile(psdsum_file)
 
     # # create pdf plot
     # prt.pa.pdf_plot()
@@ -159,8 +161,8 @@ def spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num
     dr = pd.date_range(day_start, day_stop, freq='1D')
     daily_running_tallies = []
     for d in dr:
-        y, m, d = d.year, d.month, d.day
-        prt = spec_avg_one_day(sensor, y, m, d, nfft, fs, fc, location, num_files=num_files, pad_dir=pad_dir,
+        yr, mo, da = d.year, d.month, d.day
+        prt = spec_avg_one_day(sensor, yr, mo, da, nfft, fs, fc, location, num_files=num_files, pad_dir=pad_dir,
                                out_dir=out_dir)
         if do_plot:
             prt.pa.pdf_plot()
@@ -178,11 +180,11 @@ if __name__ == "__main__":
     fs, fc = 500.0, 200.0
 
     day_start = datetime.date(2020, 4, 5)
-    day_stop = datetime.date(2020, 4, 7)
+    day_stop = datetime.date(2020, 4, 9)
 
     nfft = 32768
 
-    spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=22, pad_dir=pad_dir,
+    spec_avg_date_range(sensor, location, day_start, day_stop, nfft, fs, fc, num_files=None, pad_dir=pad_dir,
                         out_dir='c:/temp/psdsum', do_plot=False)
 
     print 'done'
