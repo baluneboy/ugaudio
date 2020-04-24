@@ -74,6 +74,9 @@ def main():
     # get input arguments
     args = get_inputs(module_logger)
 
+    print args
+    raise SystemExit
+
     # for convenience in call below, let's rename args here
     pad_dir = args.paddir
     out_dir = args.outdir

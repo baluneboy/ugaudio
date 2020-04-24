@@ -11,9 +11,9 @@ import argparse
 from dateutil import parser as dparser
 from pims.signal.rounding import is_power_of_two
 
-from defaults import DEFAULT_OUTDIR, DEFAULT_PADDIR
-from defaults import DEFAULT_SENSORS, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_NFFT, DEFAULT_NFILES
-from defaults import DEFAULT_START, DEFAULT_END
+from spectral_average_defaults import DEFAULT_OUTDIR, DEFAULT_PADDIR
+from spectral_average_defaults import DEFAULT_SENSORS, DEFAULT_RATE, DEFAULT_CUTOFF, DEFAULT_NFFT, DEFAULT_NFILES
+from spectral_average_defaults import DEFAULT_START, DEFAULT_END
 
 # create logger
 module_logger = logging.getLogger('ugaudio.argparser')
@@ -111,7 +111,8 @@ def sensors_list(s):
 def parse_inputs():
     """parse input arguments using argparse from standard library"""
 
-    parser = argparse.ArgumentParser(description="Command line argument handler for ugaudio project's main program.")
+    parser = argparse.ArgumentParser(description="Command line argument handler for ugaudio spectral_average program.",
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # a group of args for verbosity
     group = parser.add_mutually_exclusive_group()
@@ -119,39 +120,39 @@ def parse_inputs():
     group.add_argument('-q', '--quiet', action='store_true')
 
     # nfiles
-    help_nfiles = "nfiles to preview (for testing); default = %s" % str(DEFAULT_NFILES)
+    help_nfiles = 'nfiles to preview (ONLY for testing)'
     parser.add_argument('-g', '--nfiles', default=DEFAULT_NFILES, type=nfiles_int, help=help_nfiles)
 
     # nfft
-    help_nfft = "Nfft; default = %s" % str(DEFAULT_NFFT)
+    help_nfft = 'Nfft'
     parser.add_argument('-n', '--nfft', default=DEFAULT_NFFT, type=nfft_int, help=help_nfft)
 
     # sample rate
-    help_rate = "sample rate (sa/sec); default = %s" % str(DEFAULT_RATE)
+    help_rate = 'sample rate (sa/sec)'
     parser.add_argument('-r', '--rate', default=DEFAULT_RATE, type=rate_str, help=help_rate)
 
     # cutoff
-    help_cutoff = "cutoff; default = %s" % str(DEFAULT_CUTOFF)
+    help_cutoff = 'cutoff'
     parser.add_argument('-c', '--cutoff', default=DEFAULT_CUTOFF, type=cutoff_str, help=help_cutoff)
 
     # sensors
-    help_sensors = "sensors; default is %s" % DEFAULT_SENSORS
+    help_sensors = 'sensors'
     parser.add_argument('-s', '--sensors', default=DEFAULT_SENSORS, type=sensors_list, help=help_sensors)
 
     # PAD directory
-    help_paddir = 'PAD dir; default is %s' % DEFAULT_PADDIR
+    help_paddir = 'PAD dir'
     parser.add_argument('-p', '--paddir', default=DEFAULT_PADDIR, type=folder_str, help=help_paddir)
 
     # output directory
-    help_outdir = 'output dir; default is %s' % DEFAULT_OUTDIR
+    help_outdir = 'output dir'
     parser.add_argument('-o', '--outdir', default=DEFAULT_OUTDIR, type=outdir_str, help=help_outdir)
 
     # start date
-    help_start = 'start date; default is %s' % DEFAULT_START
-    parser.add_argument('-t', '--start', default=DEFAULT_START, type=dtm_date, help=help_start)
+    help_start = 'start date'
+    parser.add_argument('-d', '--start', default=DEFAULT_START, type=dtm_date, help=help_start)
 
     # end date
-    help_end = 'end date; default is %s' % DEFAULT_END
+    help_end = 'end date'
     parser.add_argument('-e', '--end', default=DEFAULT_END, type=dtm_date, help=help_end)
 
     # parse arguments
