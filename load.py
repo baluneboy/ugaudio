@@ -14,9 +14,9 @@ def bin2asc_ted(filename, columns=4):
     sys.stdout = open(filename+'.ascii', 'w')
     for i in range(len(d)/4):
         v = struct.unpack('<f', d[i*4:i*4+4]) # force little Endian float
-        print '% 12.9e   ' % v,
+        print('% 12.9e   ' % v, end=' ')
         if i%columns == columns-1:
-            print
+            print()
     sys.stdout.close()
 
 # Return 2d numpy array of float32's read from filename input.
