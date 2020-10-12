@@ -136,7 +136,12 @@ def demo_write_pad_file(fname):
     """quick demo to write 4-column PAD file"""
     values = [
         [0.0, -1.2,  1.3, -1.4],
-        [1.0,  2.2, -2.3,  2.4]
+        [1.0,  2.2, -2.3,  2.4],
+        [2.0, -1.2,  1.3, -1.4],
+        [3.0,  2.2, -2.3,  2.4],
+        [4.0,  2.2, -2.3,  2.4],
+        [5.0, -1.2,  1.3, -1.4],
+        [6.0,  2.2, -2.3,  2.4],
         ]
     a = np.array(values, dtype='float32')
     a.tofile(fname)
@@ -147,7 +152,7 @@ def demo_write_read_pad_file():
     fname = '/tmp/out.bin'
     demo_write_pad_file(fname)
     a = padread(fname)
-    print a
+    print(a)
 
 # generate representative scenario 1
 def scenario1():
@@ -181,10 +186,10 @@ def write_dummy_pad():
     fname = '/Users/ken/dev/programs/python/ugaudio/samples/scenario1.pad'
     padwrite(x, y, z, 11025, fname)
 
-ai = AlternateIntegers(value=2, numpts=162000)
-ai.write_pad('C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_22_00_00.000+2020_04_18_22_05_29.000.121f04.header', fs=500.0)
-
-ai = AlternateIntegers(value=2, numpts=166500)
-ai.write_pad('C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_23_00_00.000+2020_04_18_23_05_33.000.121f04.header', fs=500.0)
+# ai = AlternateIntegers(value=2, numpts=162000)
+# ai.write_pad('C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_22_00_00.000+2020_04_18_22_05_29.000.121f04.header', fs=500.0)
+#
+# ai = AlternateIntegers(value=2, numpts=166500)
+# ai.write_pad('C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_23_00_00.000+2020_04_18_23_05_33.000.121f04.header', fs=500.0)
 
 #scenario1()
