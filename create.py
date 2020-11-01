@@ -5,7 +5,7 @@ import numpy as np
 import tempfile
 import matplotlib.pyplot as plt
 from scipy.signal import chirp
-from ugaudio.load import aiffread, padread
+from ugaudio.load import aiffread, pad_read
 
 # A class to implement a "signal" with alternating integers.
 class AlternateIntegers(object):
@@ -151,7 +151,7 @@ def demo_write_read_pad_file():
     """quick demo to read 4-column PAD file"""    
     fname = '/tmp/out.bin'
     demo_write_pad_file(fname)
-    a = padread(fname)
+    a = pad_read(fname)
     print(a)
 
 # generate representative scenario 1

@@ -9,7 +9,7 @@ import aifc
 import struct
 import numpy as np
 import matplotlib.pyplot as plt
-from ugaudio.load import padread
+from ugaudio.load import pad_read
 from ugaudio.signal import normalize, my_taper
 
 class PadFile(object):
@@ -117,7 +117,7 @@ class PadFile(object):
             samplerate = rate
                 
         # Read data from file.
-        B = padread(self.filename)
+        B = pad_read(self.filename)
     
         # Demean each column.
         M = B.mean(axis=0)

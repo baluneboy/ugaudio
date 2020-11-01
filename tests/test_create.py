@@ -3,7 +3,7 @@
 import unittest
 import tempfile
 import numpy as np
-from ugaudio.load import padread, aiffread
+from ugaudio.load import pad_read, aiffread
 from ugaudio.create import AlternateIntegers, padwrite, uncompressed_aiff2pad
 
 # Test suite for ugaudio.create.
@@ -41,7 +41,7 @@ class CreateTestCase(unittest.TestCase):
         txyz = np.c_[ t, x, y, z ] # this we wrote to file
         
         # FIXME this is flimsy here because we rely on our own padread
-        txyzfile = padread(self.pad_filename)
+        txyzfile = pad_read(self.pad_filename)
 
         # verify each column (t,x,y,z) from file closely matches expected value
         small_delta = 1e-6 # true for our simple integer case with fs = 1 sa/sec
@@ -93,7 +93,7 @@ class CreateTestCase(unittest.TestCase):
         
         # read PAD file
         pad_file = self.aiff_filename + '.pad'
-        arr = padread(pad_file)
+        arr = pad_read(pad_file)
         
         # verify sample rate
         fs = 1.0 / arr[1, 0]

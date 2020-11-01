@@ -5,31 +5,31 @@ import aifc
 import struct
 import numpy as np
 
-# Ted Wright's original bin2asc routine convert file to ASCII.
+
 def bin2asc_ted(filename, columns=4):
     """Ted Wright's original bin2asc routine convert file to ASCII."""    
     f = open(filename)
     d = f.read()
     f.close()
     sys.stdout = open(filename+'.ascii', 'w')
-    for i in range(len(d)/4):
-        v = struct.unpack('<f', d[i*4:i*4+4]) # force little Endian float
+    for i in range(len(d)//4):
+        v = struct.unpack('<f', d[i*4:i*4+4])  # force little Endian float
         print('% 12.9e   ' % v, end=' ')
-        if i%columns == columns-1:
+        if i % columns == columns-1:
             print()
     sys.stdout.close()
 
-# Return 2d numpy array of float32's read from filename input.
-def padread(filename, columns=4, out_dtype=np.float32):
+
+def pad_read(filename, columns=4, offset=0, count=-1, out_dtype=np.float32):
     """Return 2d numpy array of float32's read from filename input."""
     with open(filename, "rb") as f: 
-        A = np.fromfile(f, dtype=np.float32) # accel file: 32-bit float "singles"
-    B = np.reshape(A, (-1, columns))
-    if B.dtype == out_dtype:
-        return B
-    return B.astype(out_dtype)
+        a = np.fromfile(f, offset=offset, count=count, dtype=np.float32)  # accel file: 32-bit float "singles"
+    b = np.reshape(a, (-1, columns))
+    if b.dtype == out_dtype:
+        return b
+    return b.astype(out_dtype)
 
-# Return data loaded from aiff file.
+
 def aiffread(aiff_file):
     """Return data loaded from aiff file.
 
@@ -54,3 +54,10 @@ def aiffread(aiff_file):
     f.close()
     arr = np.fromstring(data, np.short).byteswap()
     return arr, params
+
+
+def sams_pad_read(f, offset_rows, count_rows=-1):
+    """read count_rows from file, f, starting at offset_rows (omit time column)"""
+    offset = offset_rows * 16
+    count = -1 if count_rows == -1 else count_rows * 4
+    return pad_read(f, offset=offset, count=count)[:, -3:].copy()

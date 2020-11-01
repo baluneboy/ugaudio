@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import welch
 from scipy.io import savemat
-from ugaudio.load import padread
+from ugaudio.load import pad_read
 from pims.utils.pimsdateutil import datetime_to_ymd_path
 from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad, HeaderMatchesRateCutoffLocSsaPad
 from pims.files.utils import mkdir_p
@@ -104,7 +104,7 @@ class PsdRunningTally(object):
         print '\nBEGIN'
         for fname in self.pad_files:
             file_count += 1
-            a = padread(fname)
+            a = pad_read(fname)
             a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)  # demean x, y and z columns
             self.pa.append(a)
             print file_count, os.path.basename(fname)

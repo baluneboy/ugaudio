@@ -4,7 +4,7 @@ import aifc
 import os.path
 import numpy as np
 import matplotlib.pyplot as plt
-from ugaudio.load import padread
+from ugaudio.load import pad_read
 from ugaudio.create import get_chirp
 from ugaudio.signal import normalize
 from ugaudio.pad import PadFile
@@ -103,7 +103,7 @@ def show_samplerate(header_file):
 def demo_build_numpy_array(sensor, y, m, d, minMinutes=5.5, num_files=None, base_dir='C:/temp/pad'):
     import glob
     import datetime
-    from ugaudio.load import padread
+    from ugaudio.load import pad_read
     from pims.utils.pimsdateutil import datetime_to_ymd_path
     from pims.files.filter_pipeline import FileFilterPipeline, MinDurMinutesPad, HeaderMatchesRateCutoffLocSsaPad
     
@@ -131,7 +131,7 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=5.5, num_files=None, base
     for fname in filt_fnames[0:num_files]:
         # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
         file_count += 1
-        a = padread(fname)
+        a = pad_read(fname)
         a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)  # demean x, y and z columns
         v = np.array(np.sqrt(a[:, 1]**2 + a[:, 2]**2 + a[:, 3]**2))  # compute vector magnitude
         #print v
@@ -217,7 +217,7 @@ def demo_batch2(sensor, y, m, d, num_files=None, base_dir='C:/temp/pad'):
 def demo_batch_files():
 
     import glob
-    from ugaudio.load import padread
+    from ugaudio.load import pad_read
 
     sensor = '121f04'
     pad_dir = '/Users/ken/Downloads/pad'
@@ -232,7 +232,7 @@ def demo_batch_files():
 
     for fname in filenames:
         # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
-        a = padread(fname)
+        a = pad_read(fname)
         a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)  # demean x, y and z columns
         v = np.array(np.sqrt(a[:, 1]**2 + a[:, 2]**2 + a[:, 3]**2))  # compute vector magnitude
         #print v

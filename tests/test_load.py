@@ -5,7 +5,7 @@ import unittest
 import tempfile
 import numpy as np
 from ugaudio.pad import PadFile
-from ugaudio.load import padread, aiffread
+from ugaudio.load import pad_read, aiffread
 from ugaudio.create import AlternateIntegers, padwrite
 
 # Test suite for ugaudio.create.
@@ -27,7 +27,7 @@ class LoadTestCase(unittest.TestCase):
         """
         Test padread function with actual PAD file sample.
         """
-        arr = padread(self.pad_file)
+        arr = pad_read(self.pad_file)
         
         # verify sample rate
         fs = 1.0 / arr[1, 0]
