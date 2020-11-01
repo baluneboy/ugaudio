@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import chirp
 from ugaudio.load import aiffread, pad_read
 
-# A class to implement a "signal" with alternating integers.
+
 class AlternateIntegers(object):
     """A class to implement a "signal" with alternating integers.
 
@@ -131,7 +131,7 @@ def uncompressed_aiff2pad(fname):
     y = -0.5 * x
     padwrite(x, y, y, fs, pad_file) # NOTE: z = y
 
-# quick demo to write 4-column PAD file
+
 def demo_write_pad_file(fname):
     """quick demo to write 4-column PAD file"""
     values = [
