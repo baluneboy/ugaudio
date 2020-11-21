@@ -30,6 +30,16 @@ def pad_read(filename, columns=4, offset=0, count=-1, out_dtype=np.float32):
     return b.astype(out_dtype)
 
 
+def pad_readall(filename, columns=4, out_dtype=np.float32):
+    """Return 2d numpy array of float32's read from filename input."""
+    with open(filename, "rb") as f:
+        a = np.fromfile(f, count=-1, dtype=np.float32)  # accel file: 32-bit float "singles"
+    b = np.reshape(a, (-1, columns))
+    if b.dtype == out_dtype:
+        return b
+    return b.astype(out_dtype)
+
+
 def aiffread(aiff_file):
     """Return data loaded from aiff file.
 

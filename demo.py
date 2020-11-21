@@ -8,13 +8,14 @@ from ugaudio.load import pad_read
 from ugaudio.create import get_chirp
 from ugaudio.signal import normalize
 from ugaudio.pad import PadFile
+from ugaudio.load import pad_readall
 from scipy.signal import welch
 
 
 def demo_chirp(fs=44100):
     """simple demo of chirp signal (not representative of ug accel data)"""
 
-    print '\ndemo with artificial chirp signal (not representative of ug accel data)'
+    print('\ndemo with artificial chirp signal (not representative of ug accel data)')
 
     # get signal of interest
     y = get_chirp()
@@ -38,26 +39,26 @@ def demo_chirp(fs=44100):
     g.setparams((1, sampwidth, fs, len(data), 'NONE', 'not compressed'))
     g.writeframes(strdata)
     g.close()
-    print 'wrote demo chirp sound file %s' % aiff_file
+    print('wrote demo chirp sound file %s' % aiff_file)
     
     # plot data
     png_file = 'demo_chirp.png'   
     plt.plot(data)
     plt.savefig(png_file)    
-    print 'wrote demo accel plot file  %s' % png_file
+    print('wrote demo accel plot file  %s' % png_file)
 
 
 def demo_accel():
     """somewhat representative of microgravity accel data from ISS"""
 
-    print '\ndemo with actual acceleration data from GMT 17-Oct-2014'
+    print('\ndemo with actual acceleration data from GMT 17-Oct-2014')
 
     # get PAD file from example dir
     _DIR = os.path.dirname(__file__)
     filename = os.path.join(_DIR, 'examples/2014_10_17_06_31_15.515+2014_10_17_06_41_15.528.121f02')
     
     if not os.path.exists(filename):
-        print 'BUT COULD NOT FIND\n%s\nso abort demo\n' % filename
+        print('BUT COULD NOT FIND\n%s\nso abort demo\n' % filename)
         raise SystemExit
     
     # get PadFile and attempt conversion
@@ -70,13 +71,13 @@ def demo_accel():
     except:
         msg = 'could not convert...\n%s\nis everything okay with "examples" directory?' % pad_file
     
-    print msg + '\n'
+    print(msg + '\n')
 
 
 def demo_accel_file(data_file, axis='x'):
     """demo arbitrary file with microgravity accel data from ISS"""
 
-    print '\ndemo with actual acceleration data from %s (if file exists)' % data_file
+    print('\ndemo with actual acceleration data from %s (if file exists)' % data_file)
     
     # get PadFile and attempt conversion
     pad_file = PadFile(data_file)
@@ -91,13 +92,13 @@ def demo_accel_file(data_file, axis='x'):
     except:
         msg = 'could not convert to audio (or plot) %s' % pad_file
     
-    print msg + '\n'
+    print(msg + '\n')
 
 
 def show_samplerate(header_file):
     """return sample rate (samples/sec) for input header file"""
     pad_file = PadFile(header_file)
-    print pad_file
+    print(pad_file)
 
 
 def demo_build_numpy_array(sensor, y, m, d, minMinutes=5.5, num_files=None, base_dir='C:/temp/pad'):
@@ -111,23 +112,23 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=5.5, num_files=None, base
     fs, fc = 500, 200
     
     ffp = FileFilterPipeline(MinDurMinutesPad(minMinutes), HeaderMatchesRateCutoffLocSsaPad(fs, fc, location))
-    print ffp
+    print(ffp)
     
     ymd_dir = datetime_to_ymd_path(datetime.date(y, m, d), base_dir=base_dir)
     glob_pat = '%s/*_accel_%s/*%s' % (ymd_dir, sensor, sensor)
     fnames = glob.glob(glob_pat)
 
-    print glob_pat
-    print 'we have %d files before filtering' % len(fnames),
+    print(glob_pat)
+    print('we have %d files before filtering' % len(fnames), end='')
     filt_fnames = list( ffp(fnames) )
-    print 'and %d files after filtering' % len(filt_fnames)    
+    print('and %d files after filtering' % len(filt_fnames))
     
     if num_files is None:
         num_files = len(filt_fnames)
     
     file_count = 0
     arr = np.empty((0, 5), dtype=np.float32)  # float32 matches what we read from PAD file
-    print '\nBEGIN'
+    print('\nBEGIN')
     for fname in filt_fnames[0:num_files]:
         # read data from file (not using double type here like MATLAB would, so we get courser demeaning)
         file_count += 1
@@ -143,8 +144,8 @@ def demo_build_numpy_array(sensor, y, m, d, minMinutes=5.5, num_files=None, base
         #print v.shape, a.shape
         arr = np.append(arr, a, axis=0)
         #print arr.shape
-        print file_count, arr.shape, fname
-    print 'END'
+        print(file_count, arr.shape, fname)
+    print('END')
     return arr
 
 
@@ -163,11 +164,11 @@ def psd_xyzv(txyz, fs=500.0, nperseg=32768):
 
     # complain about not enough data for at least one segment and early return
     if numsegs < 1:
-        print '%d pts is not enough even one segment of length %d' % (N, nperseg)
+        print('%d pts is not enough even one segment of length %d' % (N, nperseg))
         return
 
     else:
-        print 'numsegs = %d, nperseg = %d, numpts = %d' % (numsegs, nperseg, numpts)
+        print('numsegs = %d, nperseg = %d, numpts = %d' % (numsegs, nperseg, numpts))
 
     # now do actual trim (resize) here
     xyz = np.resize(xyz, (numpts, 3))
@@ -175,7 +176,7 @@ def psd_xyzv(txyz, fs=500.0, nperseg=32768):
     # compute PSD for each column (each axis)
     f, Pxx = welch(xyz, fs, nperseg=nperseg, axis=0)
 
-    print Pxx.shape
+    print(Pxx.shape)
 
     # calculate overall PSD
     v = np.array(np.sqrt(Pxx[:, 0] ** 2 + Pxx[:, 1] ** 2 + Pxx[:, 2] ** 2))  # RSS(Pxx,Pyy,Pzz)
@@ -243,7 +244,7 @@ def demo_batch_files():
         a = np.append(a, v, axis=1)  # append to get 5th column for vecmag
         # print v.shape, a.shape
         arr = np.append(arr, a, axis=0)
-        print arr.shape, fname
+        print(arr.shape, fname)
 
     fig = plt.figure(figsize=(7.5, 10.0))
 
@@ -265,9 +266,27 @@ def demo_batch_files():
 
     fig.tight_layout()
     plt.show()
- 
-    
+
+
+def demo_pad_read(f1, f2):
+    """demo arbitrary file read compare 2 files"""
+
+    a = pad_readall(f1)
+    b = pad_readall(f2)
+    d = b - a
+
+    print(a)
+    print(d.min(axis=0))
+    print(d.max(axis=0))
+
+
 if __name__ == "__main__":
+
+    file1 = '/misc/cartman/home/pims/temp/pad/year2020/month11/day16/sams2_accel_121f03_TWEEK_CHEF/2020_11_16_18_36_00.010-2020_11_16_18_46_00.020.121f03'
+    file2 = '/misc/cartman/home/pims/temp/pad/year2020/month11/day16/sams2_accel_121f03_TWEEK_STAN/2020_11_16_18_36_00.010-2020_11_16_18_46_00.020.121f03'
+    demo_pad_read(file1, file2)
+
+    raise SystemExit
 
     sensor = '121f04'
     y, m, d = 2020, 4, 18
@@ -285,9 +304,9 @@ if __name__ == "__main__":
     pa.append(txyz)
     pa.plot()
 
-    print "count", pa.count
-    print pa.psd
-    print pa.spectral_avg()
+    print("count", pa.count)
+    print(pa.psd)
+    print(pa.spectral_avg())
     raise SystemExit
 
     fname = 'C:/temp/pad/year2020/month04/day18/sams2_accel_121f04/2020_04_18_00_17_15.877+2020_04_18_00_27_15.890.121f04'
