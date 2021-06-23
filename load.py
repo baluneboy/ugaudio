@@ -25,9 +25,9 @@ def pad_read(filename, columns=4, offset=0, count=-1, out_dtype=np.float32):
     with open(filename, "rb") as f: 
         a = np.fromfile(f, offset=offset, count=count, dtype=np.float32)  # accel file: 32-bit float "singles"
     b = np.reshape(a, (-1, columns))
-    if b.dtype == out_dtype:
-        return b
-    return b.astype(out_dtype)
+    if not b.dtype == out_dtype:
+        b = b.astype(out_dtype)
+    return b
 
 
 def pad_readall(filename, columns=4, out_dtype=np.float32):
