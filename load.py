@@ -4,6 +4,7 @@ import sys
 import aifc
 import struct
 import numpy as np
+from pims.utils.pimsdateutil import pad_fullfilestr_to_start_stop
 
 
 def bin2asc_ted(filename, columns=4):
@@ -14,7 +15,7 @@ def bin2asc_ted(filename, columns=4):
     sys.stdout = open(filename+'.ascii', 'w')
     for i in range(len(d)//4):
         v = struct.unpack('<f', d[i*4:i*4+4])  # force little Endian float
-        print('% 12.9e   ' % v, end=' ')
+        print('%12.9e   ' % v, end=' ')
         if i % columns == columns-1:
             print()
     sys.stdout.close()
@@ -38,6 +39,61 @@ def pad_readall(filename, columns=4, out_dtype=np.float32):
     if b.dtype == out_dtype:
         return b
     return b.astype(out_dtype)
+
+
+def padread_vxyz(filename, columns=4, out_dtype=np.float32):
+    """Return 2d numpy array of float32's read from filename input (demeaned, then 1st column replaced by vecmag)"""
+
+    # load file
+    a = pad_read(filename, columns=columns, out_dtype=out_dtype)
+
+    # demean x, y and z columns
+    a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)
+
+    # compute vector magnitude
+    v = np.array(np.sqrt(a[:, 1] ** 2 + a[:, 2] ** 2 + a[:, 3] ** 2))
+
+    # overwrite times in 1st column with vecmag values
+    a[:, 0] = v
+
+    return a
+
+
+def padread_hourpart(filename, fs, dh, columns=4, out_dtype=np.float32):
+    """Return 2d numpy array of float32's read from filename input where dh_lower <= t < dh_upper."""
+
+    # load file
+    a = padread_vxyz(filename, columns=columns, out_dtype=out_dtype)
+
+    # get start & stop time of file
+    fstart, fstop = pad_fullfilestr_to_start_stop(filename)
+
+    # find offset on lower end of file
+    i1 = 0
+    offset_lower = (dh - fstart).total_seconds()
+    if offset_lower > 0:
+        i1 = np.int(np.ceil(fs * offset_lower))
+
+    dh_upper = dh + relativedelta(hours=1)
+
+    # find offset on upper end of file
+    i2 = a.shape[0]
+    offset_upper = (fstop - dh_upper).total_seconds()
+    if offset_upper > 0:
+        i2 = np.int(np.ceil(fs * offset_upper))
+
+    # print fstart, 'fstart'
+    # print dh, 'dh'
+    #
+    # print offset_lower
+    #
+    # print fstop, 'fstop'
+    # print dh_upper, 'dh_upper'
+    #
+    # print offset_upper
+    # print i1, i2
+
+    return a[i1:i2, :]
 
 
 def aiffread(aiff_file):
