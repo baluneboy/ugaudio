@@ -47,6 +47,10 @@ def padread_vxyz(filename, columns=4, out_dtype=np.float32):
     # load file
     a = pad_read(filename, columns=columns, out_dtype=out_dtype)
 
+    # FIXME invert due to SAMS intrinsic issue
+    # invert data
+    a[:, 1:4] = -a[:, 1:4]
+
     # demean x, y and z columns
     a[:, 1:4] = a[:, 1:4] - a[:, 1:4].mean(axis=0)
 

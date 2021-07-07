@@ -47,8 +47,8 @@ def minmax_stats(pad_file):
 
 def show_pad_minmax(num_pts, max_mg_vals):
     n = '{:,}'.format(num_pts)
-    print "has {:>10s} pts with max(abs(xyz)) [mg] of:".format(n),
-    print "{:9.3f} {:9.3f} {:9.3f}".format(*max_mg_vals)
+    print("has {:>10s} pts with max(abs(xyz)) [mg] of:".format(n), end=' ')
+    print("{:9.3f} {:9.3f} {:9.3f}".format(*max_mg_vals))
     
 
 def main():
